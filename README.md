@@ -264,6 +264,8 @@ Debido a que en mi ordenador no puedo virtualizar por lo que no puedo crear máq
    
 `certbot certonly --manual --preferred-challenges dns -d franciscojavierdiaz.duckdns.org` --> Solicita únicamente la emisión del certificado (`certonly`) de forma manual (`--manual`) validando la propiedad mediante un registro DNS (`--preferred-challenges dns`) para el dominio `franciscojavierdiaz.duckdns.org`.  
 
+   ![Dominio DuckDNS](imagenes/Captura%20de%20pantalla_9.png)
+
 3. Se crea el registro `TXT` `_acme-challenge.franciscojavierdiaz.duckdns.org` en DuckDNS con el token facilitado por Certbot, generando los certificados válidos emitidos por **Let's Encrypt** en `/etc/letsencrypt/live/franciscojavierdiaz.duckdns.org/`.
    
 4. Finalmente, se añade en `/etc/nginx/sites-available/balanceador` el bloque servidor HTTPS para cifrar las conexiones:
@@ -281,3 +283,44 @@ Debido a que en mi ordenador no puedo virtualizar por lo que no puedo crear máq
 `service nginx reload` --> Recarga la configuración de Nginx sin interrumpir el servicio para activar el certificado SSL.  
 
   ![Dominio DuckDNS](imagenes/Captura%20de%20pantalla_7.png)
+
+## 3. Comprobaciones y Capturas de Pantalla  
+
+### 3.1. Estado general del escenario (`vagrant status`)  
+Se comprueba que las cuatro instancias (`base_datos`, `web1`, `web2` y `balanceador`) se encuentran levantadas y en ejecución simultánea  
+
+![Estado general Vagrant](imagenes/Captura%20de%20pantalla_1.png)  
+
+### 3.2. Capa 3 - Base de Datos (`FranciscoJavierDiazGarronBBDD`)  
+Se verifica que el servicio MariaDB está activo y que iptables mantiene la política DROP, aceptando conexiones al puerto 3306 únicamente desde Web1 172.20.2.21 y Web2 172.20.2.22`  
+
+![Estado Base de Datos](imagenes/Captura%20de%20pantalla_2.png)  
+
+### 3.3. Capa 2 - Servidores Web (`Web1` y `Web2`)  
+Se comprueba que tanto FranciscoJavierDiazGarronWeb1 como FranciscoJavierDiazGarronWeb2 tienen Apache2 corriendo y restringen el acceso al puerto 80 exclusivamente a la IP del balanceador 172.20.1.10  
+
+![Estado Servidores Web](imagenes/Captura%20de%20pantalla_3.png)  
+
+### 3.4. Capa 1 - Balanceador (`Nginx`) y Aislamiento de Internet  
+Se verifica que Nginx está activo en FranciscoJavierDiazGarronBalanceador con los puertos 22, 80 y 443 abiertos  
+
+![Estado Balanceador Nginx](imagenes/Captura%20de%20pantalla_4.png)  
+
+Además, se comprueba mediante ip route en la base de datos que no dispone de puerta de enlace por defecto, demostrando que está totalmente aislada de Internet  
+
+![Aislamiento de Internet](imagenes/Captura%20de%20pantalla_5.png)  
+
+### 3.5. Funcionamiento del Balanceo de Carga (Round Robin)
+Al realizar dos peticiones HTTP consecutivas al balanceador (`http://localhost:8080`), se comprueba cómo alterna automáticamente entre Servidor Web 1 y Servidor Web 2  
+
+![Prueba Balanceo de Carga](imagenes/Captura%20de%20pantalla_6.png)
+
+---
+
+## 4. Screencast de Demostración
+
+Y para acabar en el siguiente video se puede observar que los servidores funcionan porque nos aparece la aplicación y su funcionamiento añadiendo un registro guardandolo mostrando que también funciona la base de datos y como se elimina el registro.  
+
+https://github.com/user-attachments/assets/ef88e21e-1090-40c0-9bc7-74311bc90e3d
+
+
