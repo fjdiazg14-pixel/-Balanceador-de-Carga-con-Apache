@@ -6,7 +6,7 @@ apt-get install -y mariadb-server git iptables iptables-persistent iproute2
 
 sed -i 's/127.0.0.1/0.0.0.0/g' /etc/mysql/mariadb.conf.d/50-server.cnf
 service mariadb restart
-git clone https://github.com /tmp/app
+git clone https://github.com/josejuansanchez/iaw-practica-lamp /tmp/app
 
 mysql -e "CREATE DATABASE IF NOT EXISTS lamp_db;"
 mysql -e "CREATE USER IF NOT EXISTS 'javier-lamp'@'%' IDENTIFIED BY '1234';"
