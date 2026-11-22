@@ -6,7 +6,7 @@ apt-get update -y
 apt-get install -y apache2 php libapache2-mod-php php-mysql git iptables iptables-persistent iproute2
 
 rm -rf /var/www/html/*
-git clone https://github.com /tmp/app
+git clone https://github.com/josejuansanchez/iaw-practica-lamp /tmp/app
 cp -r /tmp/app/src/* /var/www/html/
 rm -rf /tmp/app
 
