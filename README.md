@@ -322,5 +322,3 @@ Al realizar dos peticiones HTTP consecutivas al balanceador (`http://localhost:8
 Y para acabar en el siguiente video se puede observar que los servidores funcionan porque nos aparece la aplicación y su funcionamiento añadiendo un registro guardandolo mostrando que también funciona la base de datos y como se elimina el registro.  
 
 https://github.com/user-attachments/assets/ef88e21e-1090-40c0-9bc7-74311bc90e3d
-
-
