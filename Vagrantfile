@@ -18,7 +18,7 @@ Vagrant.configure("2") do |config|
       d.create_args = ["--network=red_bbdd", "--ip=172.20.2.20"]
     end
 
-    bd.vm.provision "shell", path: "aprovisionamiento_bd.sh"
+    bd.vm.provision "shell", path: "scripts/aprovisionamiento_bd.sh"
   end
 
   config.vm.define "web1" do |w1|
@@ -34,7 +34,7 @@ Vagrant.configure("2") do |config|
       d.create_args = ["--network=red_web", "--ip=172.20.1.21"]
     end
 
-    w1.vm.provision "shell", path: "aprovisionamiento_web.sh", args: ["Servidor Web 1"]
+    w1.vm.provision "shell", path: "scripts/aprovisionamiento_web.sh", args: ["Servidor Web 1"]
   end
 
   config.vm.define "web2" do |w2|
@@ -50,7 +50,7 @@ Vagrant.configure("2") do |config|
       d.create_args = ["--network=red_web", "--ip=172.20.1.22"]
     end
 
-    w2.vm.provision "shell", path: "aprovisionamiento_web.sh", args: ["Servidor Web 2"]
+    w2.vm.provision "shell", path: "scripts/aprovisionamiento_web.sh", args: ["Servidor Web 2"]
   end
 
   config.vm.define "balanceador" do |bal|
@@ -68,6 +68,6 @@ Vagrant.configure("2") do |config|
       d.create_args = ["--network=red_web", "--ip=172.20.1.10"]
     end
 
-    bal.vm.provision "shell", path: "aprovisionamiento_balanceador.sh"
+    bal.vm.provision "shell", path: "scripts/aprovisionamiento_balanceador.sh"
   end
 end
