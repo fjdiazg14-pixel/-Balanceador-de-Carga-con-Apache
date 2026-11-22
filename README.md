@@ -34,13 +34,13 @@ Debido a que en mi ordenador no puedo virtualizar por lo que no puedo crear máq
 
 `config.ssh.username = "vagrant"`, `config.ssh.password = "vagrant"` y `config.ssh.insert_key = false` --> Configuran el usuario, la contraseña y desactivan el intercambio automático de claves SSH para que Vagrant pueda conectarse directamente a los contenedores Docker.  
 
-`cmd_arranque = ["bash", "-c", "..."]` --> Define el comando inicial que ejecutarán los contenedores al arrancar: actualiza repositorios, instala `openssh-server` y `sudo`, crea el directorio `/run/sshd`, crea el usuario `vagrant` con permisos `sudo` sin contraseña y arranca el demonio SSH en primer plano (`/usr/sbin/sshd -D`).  
+`cmd_arranque = ["bash", "-c", "..."]` --> Define el comando inicial que ejecutarán los contenedores al arrancar: actualiza repositorios, instala openssh-server y sudo, crea el directorio /run/sshd, crea el usuario vagrant con permisos sudo sin contraseña y arranca el demonio SSH en primer plano (`/usr/sbin/sshd -D`).  
 
-`config.vm.define "base_datos" do |bd|` --> Define la máquina de Capa 3 con el hostname `FranciscoJavierDiazGarronBBDD`, usando la imagen `debian:bookworm`, conectada únicamente a la red `red_bbdd` con la IP `172.20.2.20` y ejecutando el script `aprovisionamiento_bd.sh`.  
+`config.vm.define "base_datos" do |bd|` --> Define la máquina de Capa 3 con el hostname `FranciscoJavierDiazGarronBBDD`, usando la imagen debian:bookworm, conectada únicamente a la red `red_bbdd` con la IP `172.20.2.20` y ejecutando el script `aprovisionamiento_bd.sh`.  
 
-`config.vm.define "web1" do |w1|` y `config.vm.define "web2" do |w2|` --> Definen las dos máquinas de Capa 2 (`FranciscoJavierDiazGarronWeb1` y `FranciscoJavierDiazGarronWeb2`), conectadas a `red_web` (`172.20.1.21` y `172.20.1.22`) y a `red_bbdd` (`172.20.2.21` y `172.20.2.22`), pasando a `aprovisionamiento_web.sh` el argumento `"Servidor Web 1"` y `"Servidor Web 2"` respectivamente, ademas de ejecutarse el aprovisionamiento.  
+`config.vm.define "web1" do |w1|` y `config.vm.define "web2" do |w2|` --> Definen las dos máquinas de Capa 2 `FranciscoJavierDiazGarronWeb1` y `FranciscoJavierDiazGarronWeb2`, conectadas a `red_web` (`172.20.1.21` y `172.20.1.22`) y a `red_bbdd` (`172.20.2.21` y `172.20.2.22`), pasando a `aprovisionamiento_web.sh` el argumento `"Servidor Web 1"` y `"Servidor Web 2"` respectivamente, ademas de ejecutarse el aprovisionamiento.  
 
-`config.vm.define "balanceador" do |bal|` --> Define la máquina de Capa 1 (`FranciscoJavierDiazGarronBalanceador`), conectada a `red_web` (`172.20.1.10`), redirigiendo los puertos `80 -> 8080` y `443 -> 8443` mediante Port Forwarding y ejecutando `aprovisionamiento_balanceador.sh`.  
+`config.vm.define "balanceador" do |bal|` --> Define la máquina de Capa 1 `FranciscoJavierDiazGarronBalanceador`, conectada a `red_web` (`172.20.1.10`), redirigiendo los puertos `80 -> 8080` y `443 -> 8443` mediante Port Forwarding y ejecutando `aprovisionamiento_balanceador.sh`.  
 
 ### 2.2. Capa 3: Servidor de Base de Datos (`aprovisionamiento_bd.sh`)  
 
@@ -74,13 +74,13 @@ Debido a que en mi ordenador no puedo virtualizar por lo que no puedo crear máq
 
 `iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT` --> Permite el tráfico de respuesta de conexiones que ya estén establecidas o relacionadas.  
 
-`iptables -A INPUT -p tcp --dport 22 -j ACCEPT` --> Permite el acceso por SSH (puerto `22`) para la administración y aprovisionamiento de Vagrant.  
+`iptables -A INPUT -p tcp --dport 22 -j ACCEPT` --> Permite el acceso por SSH puerto 22 para la administración y aprovisionamiento de Vagrant.  
 
-`iptables -A INPUT -p tcp -s 172.20.2.21 --dport 3306 -j ACCEPT` --> Permite peticiones TCP al puerto de MariaDB (`3306`) procedentes únicamente de la IP del Servidor Web 1 (`172.20.2.21`).  
+`iptables -A INPUT -p tcp -s 172.20.2.21 --dport 3306 -j ACCEPT` --> Permite peticiones TCP al puerto de MariaDB 3306 procedentes únicamente de la IP del Servidor Web 1 (`172.20.2.21`).  
 
-`iptables -A INPUT -p tcp -s 172.20.2.22 --dport 3306 -j ACCEPT` --> Permite peticiones TCP al puerto de MariaDB (`3306`) procedentes únicamente de la IP del Servidor Web 2 (`172.20.2.22`).  
+`iptables -A INPUT -p tcp -s 172.20.2.22 --dport 3306 -j ACCEPT` --> Permite peticiones TCP al puerto de MariaDB 3306 procedentes únicamente de la IP del Servidor Web 2 (`172.20.2.22`).  
 
-`iptables -P INPUT DROP` --> Establece la política por defecto de entrada en `DROP`, bloqueando cualquier otro tráfico no autorizado hacia la base de datos.  
+`iptables -P INPUT DROP` --> Establece la política por defecto de entrada en DROP, bloqueando cualquier otro tráfico no autorizado hacia la base de datos.  
 
 `netfilter-persistent save` --> Guarda las reglas de `iptables` de forma persistente para que no se pierdan al reiniciar.  
 
@@ -90,7 +90,7 @@ Debido a que en mi ordenador no puedo virtualizar por lo que no puedo crear máq
 
 `[Unit]` --> Define los metadatos y dependencias de arranque del servicio  
 
-`Description=Eliminar ruta por defecto para aislar de Internet` --> Descripción identificativa del servicio.  
+`Description=Eliminar ruta por defecto para aislar de Internet` --> Descripción descriptiva del servicio.  
 
 `After=network-online.target` --> Indica que el servicio debe ejecutarse justo después de que la red esté completamente levantada.  
 
@@ -108,7 +108,7 @@ Debido a que en mi ordenador no puedo virtualizar por lo que no puedo crear máq
 
 `WantedBy=multi-user.target` --> Vincula el servicio al arranque estándar multiusuario de Linux.  
 
-`EOF` --> Marca el final del bloque de texto volcado en `no-internet.service`.  
+`EOF` --> Marca el final del bloque de texto en `no-internet.service`.  
 
 `systemctl daemon-reload` --> Recarga la configuración de `systemd` para reconocer el nuevo servicio creado.  
 
@@ -123,13 +123,13 @@ Debido a que en mi ordenador no puedo virtualizar por lo que no puedo crear máq
 
 `NOMBRE_SERVIDOR=$1` --> Guarda en la variable `NOMBRE_SERVIDOR` el primer argumento pasado desde el `Vagrantfile` (`Servidor Web 1` o `Servidor Web 2`).  
 
-`apt-get update -y` --> Actualiza la lista de paquetes de los repositorios de Debian 12.  
+`apt-get update -y` --> Actualiza la lista de paquetes del sistema.  
 
 `apt-get install -y apache2 php libapache2-mod-php php-mysql git iptables iptables-persistent iproute2` --> Instala Apache2, PHP, el módulo de integración entre Apache y PHP, el controlador MySQL para PHP, Git, el cortafuegos `iptables` y las herramientas de red `iproute2`.  
 
 `rm -rf /var/www/html/*` --> Elimina los archivos por defecto del directorio público de Apache.  
 
-`git clone https://github.com /tmp/app` --> Clona el repositorio con la aplicación web en la carpeta temporal `/tmp/app`.  
+`git clone https://github.com/josejuansanchez/iaw-practica-lamp /tmp/app` --> Clona el repositorio con la aplicación web en la carpeta temporal `/tmp/app`.  
 
 `cp -r /tmp/app/src/* /var/www/html/` --> Copia el código fuente de la aplicación al directorio raíz de Apache (`/var/www/html/`).  
 
@@ -137,11 +137,11 @@ Debido a que en mi ordenador no puedo virtualizar por lo que no puedo crear máq
 
 `sed -i "s/localhost/172.20.2.20/g" /var/www/html/config.php` --> Sustituye en `config.php` el servidor `localhost` por la dirección IP del servidor de base de datos (`172.20.2.20`).  
 
-`sed -i "s/database_name_here/lamp_db/g" /var/www/html/config.php` --> Sustituye el nombre de la base de datos por `lamp_db`.  
+`sed -i "s/database_name_here/lamp_db/g" /var/www/html/config.php` --> Sustituye el nombre de la base de datos por `lamp_db` en config.php.  
 
-`sed -i "s/username_here/javier-lamp/g" /var/www/html/config.php` --> Sustituye el usuario de la base de datos por `javier-lamp`.  
+`sed -i "s/username_here/javier-lamp/g" /var/www/html/config.php` --> Sustituye el usuario de la base de datos por `javier-lamp` en config.php.  
 
-`sed -i "s/password_here/1234/g" /var/www/html/config.php` --> Sustituye la contraseña por `1234`.  
+`sed -i "s/password_here/1234/g" /var/www/html/config.php` --> Sustituye la contraseña por `1234` en config.php.  
 
 `sed -i "s/<body>/<body><div style='background:#222;color:#fff;padding:10px;text-align:center;'>Atendido por: <strong>$NOMBRE_SERVIDOR ($(hostname))<\/strong><\/div>/g" /var/www/html/index.php` --> Inserta una barra superior en `index.php` mostrando qué servidor (`Servidor Web 1` o `Servidor Web 2`) y `hostname` atiende la petición web.  
 
@@ -153,9 +153,9 @@ Debido a que en mi ordenador no puedo virtualizar por lo que no puedo crear máq
 
 `iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT` --> Permite las respuestas de conexiones ya establecidas.  
 
-`iptables -A INPUT -p tcp --dport 22 -j ACCEPT` --> Permite el acceso SSH (puerto `22`).  
+`iptables -A INPUT -p tcp --dport 22 -j ACCEPT` --> Permite el acceso SSH puerto 22.  
 
-`iptables -A INPUT -p tcp -s 172.20.1.10 --dport 80 -j ACCEPT` --> Permite tráfico HTTP al puerto `80` procedente **únicamente** de la IP del balanceador de carga (`172.20.1.10`).  
+`iptables -A INPUT -p tcp -s 172.20.1.10 --dport 80 -j ACCEPT` --> Permite tráfico HTTP al puerto `80` procedente únicamente de la IP del balanceador de carga (`172.20.1.10`).  
 
 `iptables -P INPUT DROP` --> Bloquea por defecto cualquier otra conexión entrante hacia los servidores web.  
 
@@ -167,7 +167,7 @@ Debido a que en mi ordenador no puedo virtualizar por lo que no puedo crear máq
 
 `[Unit]` --> Define los metadatos y dependencias de arranque del servicio:  
 
-`Description=Eliminar ruta por defecto para aislar Capa 2` --> Descripción identificativa del servicio dentro del sistema.  
+`Description=Eliminar ruta por defecto para aislar Capa 2` --> Descripción descriptiva del servicio dentro del sistema.  
 
 `After=network-online.target` --> Indica que el servicio debe ejecutarse justo después de que la red esté completamente levantada.  
 
@@ -183,9 +183,9 @@ Debido a que en mi ordenador no puedo virtualizar por lo que no puedo crear máq
 
 `[Install]` --> Define en qué momento del arranque se activará el servicio  
 
-`WantedBy=multi-user.target` --> Vincula el servicio al arranque estándar multiusuario de Linux.  
+`WantedBy=multi-user.target` --> Vincula el servicio al arranque estándar multiusuario de Linux, para que lo ejecuten todos los usuarios.  
 
-`EOF` --> Marca el final del bloque de texto volcado en `/etc/systemd/system/no-internet.service`.  
+`EOF` --> Marca el final del bloque de texto en `/etc/systemd/system/no-internet.service`.  
 
 ### 2.4. Capa 1: Balanceador de Carga (`aprovisionamiento_balanceador.sh`)  
 
@@ -193,11 +193,11 @@ Debido a que en mi ordenador no puedo virtualizar por lo que no puedo crear máq
 
 `export DEBIAN_FRONTEND=noninteractive` --> Configura la instalación en modo no interactivo para no detenerse pidiendo confirmaciones al usuario.  
 
-`apt-get update -y` --> Actualiza la lista de paquetes disponibles y sus versiones en Debian 12.  
+`apt-get update -y` --> Actualiza la lista de paquetes disponibles y sus versiones en el sistema.  
 
-`apt-get install -y nginx certbot python3-certbot-nginx iptables iptables-persistent iproute2` --> Instala sin pedir confirmación el servidor proxy inverso **Nginx**, **Certbot**, el plugin de Certbot para Nginx, el cortafuegos `iptables`, `iptables-persistent` para guardar las reglas y `iproute2`.  
+`apt-get install -y nginx certbot python3-certbot-nginx iptables iptables-persistent iproute2` --> Instala sin pedir confirmación el servidor proxy inverso Nginx, Certbot, el plugin de Certbot para Nginx, el cortafuegos `iptables`, `iptables-persistent` para guardar las reglas y `iproute2`.  
 
-`cat << 'EOF' > /etc/nginx/sites-available/balanceador` --> Crea el archivo de configuración del sitio virtual de Nginx volcando todo el contenido siguiente hasta encontrar la marca `EOF`  
+`cat << 'EOF' > /etc/nginx/sites-available/balanceador` --> Crea el archivo de configuración del sitio virtual de Nginx metiendo todo el contenido siguiente hasta encontrar la marca `EOF`  
 
 `upstream backend_webs {` --> Inicia el bloque que define el grupo de servidores backend entre los que se repartirá el tráfico:  
 
@@ -213,9 +213,9 @@ Debido a que en mi ordenador no puedo virtualizar por lo que no puedo crear máq
 
 `server_name _;` --> Acepta peticiones dirigidas a cualquier nombre de dominio o dirección IP.  
 
-`location / {` --> Define cómo gestionar todas las peticiones dirigidas a la ruta raíz (`/`)  
+`location / {` --> Define cómo gestionar todas las peticiones dirigidas a la ruta raíz /  
 
-`proxy_pass http://backend_webs;` --> Reenvía la petición hacia el grupo `backend_webs`, alternando entre `Web1` y `Web2` mediante algoritmo *Round Robin*.  
+`proxy_pass http://backend_webs;` --> Reenvía la petición hacia el grupo `backend_webs`, alternando entre `Web1` y `Web2` mediante algoritmo Round Robin.  
 
 `proxy_set_header Host $host;` --> Conserva y reenvía la cabecera original `Host` solicitada por el cliente.  
 
@@ -229,7 +229,7 @@ Debido a que en mi ordenador no puedo virtualizar por lo que no puedo crear máq
 
 `}` --> Cierra el bloque `server`.  
 
-`EOF` --> Marca el final del bloque de configuración volcado en `/etc/nginx/sites-available/balanceador`.  
+`EOF` --> Marca el final del bloque de configuración en `/etc/nginx/sites-available/balanceador`.  
 
 `rm -f /etc/nginx/sites-enabled/default` --> Elimina el enlace simbólico del sitio web por defecto de Nginx.  
 
@@ -243,13 +243,13 @@ Debido a que en mi ordenador no puedo virtualizar por lo que no puedo crear máq
 
 `iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT` --> Permite el tráfico de conexiones ya establecidas o relacionadas.  
 
-`iptables -A INPUT -p tcp --dport 22 -j ACCEPT` --> Permite el acceso SSH (puerto `22`).  
+`iptables -A INPUT -p tcp --dport 22 -j ACCEPT` --> Permite el acceso SSH puerto 22.  
 
-`iptables -A INPUT -p tcp --dport 80 -j ACCEPT` --> Permite el tráfico web HTTP (puerto `80`) desde el exterior.  
+`iptables -A INPUT -p tcp --dport 80 -j ACCEPT` --> Permite el tráfico web HTTP puerto 80 desde el exterior.  
 
-`iptables -A INPUT -p tcp --dport 443 -j ACCEPT` --> Permite el tráfico web seguro HTTPS (puerto `443`) desde el exterior.  
+`iptables -A INPUT -p tcp --dport 443 -j ACCEPT` --> Permite el tráfico web seguro HTTPS puerto 443 desde el exterior.  
 
-`iptables -P INPUT DROP` --> Establece la política por defecto de entrada en `DROP` para bloquear cualquier otro puerto distinto de `22`, `80` y `443`.  
+`iptables -P INPUT DROP` --> Establece la política por defecto de entrada en DROP para bloquear cualquier otro puerto distinto de 22, 80 y 443.  
 
 `netfilter-persistent save` --> Guarda las reglas del cortafuegos de forma permanente.  
 
@@ -294,26 +294,26 @@ Se comprueba que las cuatro instancias (`base_datos`, `web1`, `web2` y `balancea
 ### 3.2. Capa 3 - Base de Datos (`FranciscoJavierDiazGarronBBDD`)  
 Se verifica que el servicio MariaDB está activo y que iptables mantiene la política DROP, aceptando conexiones al puerto 3306 únicamente desde Web1 172.20.2.21 y Web2 172.20.2.22`  
 
-![Estado Base de Datos](imagenes/Captura%20de%20pantalla_2.png)  
+![Estado Base de Datos](imagenes/Captura%20de%20pantalla_3.png)  
 
 ### 3.3. Capa 2 - Servidores Web (`Web1` y `Web2`)  
 Se comprueba que tanto FranciscoJavierDiazGarronWeb1 como FranciscoJavierDiazGarronWeb2 tienen Apache2 corriendo y restringen el acceso al puerto 80 exclusivamente a la IP del balanceador 172.20.1.10  
 
-![Estado Servidores Web](imagenes/Captura%20de%20pantalla_3.png)  
+![Estado Servidores Web](imagenes/Captura%20de%20pantalla_4.png)  
 
 ### 3.4. Capa 1 - Balanceador (`Nginx`) y Aislamiento de Internet  
 Se verifica que Nginx está activo en FranciscoJavierDiazGarronBalanceador con los puertos 22, 80 y 443 abiertos  
 
-![Estado Balanceador Nginx](imagenes/Captura%20de%20pantalla_4.png)  
+![Estado Balanceador Nginx](imagenes/Captura%20de%20pantalla_5.png)  
 
 Además, se comprueba mediante ip route en la base de datos que no dispone de puerta de enlace por defecto, demostrando que está totalmente aislada de Internet  
 
-![Aislamiento de Internet](imagenes/Captura%20de%20pantalla_5.png)  
+![Aislamiento de Internet](imagenes/Captura%20de%20pantalla_6.png)  
 
 ### 3.5. Funcionamiento del Balanceo de Carga (Round Robin)
 Al realizar dos peticiones HTTP consecutivas al balanceador (`http://localhost:8080`), se comprueba cómo alterna automáticamente entre Servidor Web 1 y Servidor Web 2  
 
-![Prueba Balanceo de Carga](imagenes/Captura%20de%20pantalla_6.png)
+![Prueba Balanceo de Carga](imagenes/Captura%20de%20pantalla_2.png)
 
 ---
 
